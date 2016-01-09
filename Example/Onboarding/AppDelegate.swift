@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
         let view1 = OnboardingView()
-        view1.backgroundColor = UIColor.blueColor()
+        view1.backgroundColor = UIColor.clearColor()
         
         let view2 = OnboardingView()
         view2.backgroundColor = UIColor.greenColor()
@@ -26,7 +26,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let view3 = OnboardingView()
         view3.backgroundColor = UIColor.yellowColor()
         
-        window?.rootViewController = OnboardingViewController(contentViews: [view1, view2, view3])
+        let onboardingViewController = OnboardingViewController(contentViews: [view1, view2, view3])
+        onboardingViewController.backgroundImage = UIImage(named: "amsterdam")
+        
+        window?.rootViewController = onboardingViewController
         
         return true
     }
