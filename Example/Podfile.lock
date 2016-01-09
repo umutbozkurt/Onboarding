@@ -1,0 +1,14 @@
+PODS:
+  - Onboarding (0.1.0)
+
+DEPENDENCIES:
+  - Onboarding (from `../`)
+
+EXTERNAL SOURCES:
+  Onboarding:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Onboarding: f4520f3eac409f96919d5b0f67ff4de76938b100
+
+COCOAPODS: 0.39.0
