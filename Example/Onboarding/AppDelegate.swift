@@ -26,10 +26,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let view3 = OnboardingView()
         view3.backgroundColor = UIColor.yellowColor()
         
-        let onboardingViewController = OnboardingViewController(contentViews: [view1, view2, view3])
-        onboardingViewController.backgroundImage = UIImage(named: "amsterdam")
+//        let onboardingViewController = OnboardingViewController(contentViews: [view1, view2, view3])
+//        onboardingViewController.background = UIImage(named: "amsterdam")
+//        
+//        window?.rootViewController = onboardingViewController
         
-        window?.rootViewController = onboardingViewController
+        (window?.rootViewController as! OnboardingViewController).contentViews = [view1, view2, view3]
         
         return true
     }

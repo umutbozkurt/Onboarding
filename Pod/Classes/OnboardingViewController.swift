@@ -11,23 +11,39 @@ import UIKit
 public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
     public let scrollView = UIScrollView()
     public var pageControl = UIPageControl()
-    public var contentViews = Array<OnboardingView>()
+    public var contentViews = Array<OnboardingView>() {
+        didSet {
+            setupContentViews(contentViews)
+            view.setNeedsLayout()
+        }
+    }
     
     private let containerView = UIView()
     
-    /// Page control height. Increasing page control height will *not* increase indicator size.
-    public var pageControlHeight = 35
+    // MARK: Page Control
+    public var pageControlHeight: Float? = 35.0
+    public var bottomMargin: Float? = 15.0
     
-    /// Page control bottom margin.
-    public var pageControlBottomMargin = 15
+    /// The background image that will be seen in all content views. If this is set, content views should have `alpha < 1`
+    public var image: UIImage?
+
+    /// The background video that will be seen in all content views. If this is set, content views should have `alpha < 1`
+    public var videoURL: NSURL?
     
-    /// The background image that will be seen in all content views. If this is set, content views should have `alpha=0`
-    public var backgroundImage: UIImage?
+    /// UIBlurEffectStyle on background image.
+    public var blurStyle: UIBlurEffectStyle?
+
+    /// UIVIbrancyEffect on blurred background image. Defaults to `false`
+    public var vibrancy: Bool? = false
     
     /// Initializes OnboardingViewController with content views
     public init(contentViews: Array<OnboardingView>) {
         self.contentViews = contentViews
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
     
     public override func loadView() {
@@ -38,7 +54,7 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
         setupBackgroungImage()
         setupContentViews(contentViews)
         setupPageControl()
-}
+    }
     
     private func setupScrollView() {
         scrollView.pagingEnabled = true
@@ -65,13 +81,12 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
         scrollView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[containerView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
     }
     
-    private func setupBackgroungImage()
-    {
-        guard backgroundImage != nil else {
+    private func setupBackgroungImage() {
+        guard image != nil else {
             return
         }
         
-        let backgroundImageView = UIImageView(image: backgroundImage)
+        let backgroundImageView = UIImageView(image: image)
         let bindings = ["bgView": backgroundImageView]
         
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -79,9 +94,15 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
         view.insertSubview(backgroundImageView, belowSubview: scrollView)
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[bgView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[bgView]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
+        
+        
     }
     
     private func setupContentViews(contentViews: Array<OnboardingView>) {
+        guard contentViews.count > 0 else {
+            return
+        }
+        
         let metrics = ["viewWidth": view.bounds.size.width, "viewHeight": view.bounds.size.height]
         var bindings = Dictionary<String, OnboardingView>()
         
@@ -102,8 +123,7 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
         containerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(horizontalFormat, options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: bindings))
     }
     
-    private func setupPageControl()
-    {
+    private func setupPageControl() {
         view.addSubview(pageControl)
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         pageControl.pageIndicatorTintColor = UIColor.redColor()
@@ -111,7 +131,7 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
         pageControl.numberOfPages = contentViews.count
         
         let bindings = ["pageControl": pageControl]
-        let metrics = ["margin": pageControlBottomMargin, "height": pageControlHeight]
+        let metrics = ["margin": bottomMargin!, "height": pageControlHeight!]
         
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|[pageControl]|", options: NSLayoutFormatOptions(rawValue: 0), metrics: nil, views: bindings))
         view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[pageControl(height)]-(margin)-|", options: NSLayoutFormatOptions(rawValue: 0), metrics: metrics, views: bindings))
@@ -119,9 +139,5 @@ public class OnboardingViewController: UIViewController, UIScrollViewDelegate {
 
     public func scrollViewWillEndDragging(scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
         pageControl.currentPage = Int(targetContentOffset.memory.x / scrollView.bounds.size.width)
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
